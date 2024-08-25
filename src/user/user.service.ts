@@ -112,7 +112,7 @@ export class UserService {
 
   
 
-  private async encryptPassword(password: string): Promise<string> {
+   async encryptPassword(password: string): Promise<string> {
     try {
       const iv = randomBytes(16);
       return await this.encryptPasswordWithIv(password, iv.toString('hex'));
@@ -121,7 +121,7 @@ export class UserService {
     }
   }
 
-  private async encryptPasswordWithIv(
+   async encryptPasswordWithIv(
     password: string,
     ivHex: string,
   ): Promise<string> {
