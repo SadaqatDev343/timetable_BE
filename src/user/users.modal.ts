@@ -24,7 +24,7 @@ export class User extends Document {
   contact: string;
 
   @Prop({ required: true })
-  role: UserRole;
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

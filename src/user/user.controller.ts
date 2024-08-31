@@ -21,6 +21,7 @@ export class UserController {
   @Post('register')
   async create(@Res() response: Response, @Body() createUserDto: createUserDto) {
     try {
+       console.log("call register api");
       const { user, token } = await this.userService.createUser(createUserDto);
       return response.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
@@ -44,6 +45,33 @@ export class UserController {
   ) {
     try {
       const user = await this.userService.logIn(email, password);
+      if (!user) {
+        throw new HttpException(
+          'Connect to the admin',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      return response.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Login successful',
+        data: user,
+      });
+    } catch (error) {
+      return response.status(HttpStatus.UNAUTHORIZED).json({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Login failed',
+        error: error.message,
+      });
+    }
+  }
+  @Post('adminLogin')
+  async adminLogin(
+    @Res() response: Response,
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    try {
+      const user = await this.userService.adminLogin(email, password);
       if (!user) {
         throw new HttpException(
           'Connect to the admin',

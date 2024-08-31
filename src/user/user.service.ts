@@ -74,29 +74,74 @@ export class UserService {
   async logIn(email: string, password: string): Promise<IAuthResponse> {
     try {
       const user = await this.userModel
-        .findOne({ email})
+        .findOne({ email })
         .select('-__v')
         .exec();
-
+  
       if (!user) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('User not found');
       }
-
+  
       const [storedIv] = user.password.split('|');
       const encryptedPassword = await this.encryptPasswordWithIv(password, storedIv);
-
+  
       if (encryptedPassword !== user.password) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('Invalid password');
       }
-
-      const payload = { userId: user._id, email: user.email };
+  
+      // Check user role
+      if (!['student', 'teacher', 'staff'].includes(user.role)) {
+        throw new UnauthorizedException('Unauthorized role');
+      }
+  
+      const payload = { userId: user._id, email: user.email, role: user.role };
       const accessToken = await this.jwtService.signAsync(payload);
-
+  
       return { user, access_Token: accessToken };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
+  
+  async adminLogin(email: string, password: string): Promise<IAuthResponse> {
+    try {
+      // Find the user by email
+      const user = await this.userModel
+        .findOne({ email })
+        .select('-__v')
+        .exec();
+  
+      // Check if user exists
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+  
+      // Check if the user's role is admin
+      if (user.role !== 'admin') {
+        throw new UnauthorizedException('Unauthorized role');
+      }
+  
+      // Decrypt and verify the password
+      const [storedIv] = user.password.split('|');
+      const encryptedPassword = await this.encryptPasswordWithIv(password, storedIv);
+  
+      // Validate the password
+      if (encryptedPassword !== user.password) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+  
+      // Generate an access token
+      const payload = { userId: user._id, email: user.email };
+      const accessToken = await this.jwtService.signAsync(payload);
+  
+      // Return the user and access token
+      return { user, access_Token: accessToken };
+    } catch (error) {
+      // Handle and rethrow errors with a generic message
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  }
+  
 
   async getAllUsers(email?: string): Promise<Omit<User, 'password'>[]> {
     try {
