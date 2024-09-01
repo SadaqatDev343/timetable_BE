@@ -21,4 +21,8 @@ export class createUserDto {
   @IsEnum(UserRole)
   @IsNotEmpty()
   role: string;
+
+  @IsString()
+  @IsOptional()
+  OTP?: string;
 }

@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { UserRole } from 'src/types';
 
 @Schema({
   toJSON: {
@@ -25,6 +24,9 @@ export class User extends Document {
 
   @Prop({ required: true })
   role: string;
+
+  @Prop({ required: false })
+  OTP?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

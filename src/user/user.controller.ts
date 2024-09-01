@@ -12,10 +12,14 @@ import {
 import { Response } from 'express';
 import { createUserDto } from './user.dto';
 import { UserService } from './user.service';
+import { MailerService } from '../mailer/mailer.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly mailerService: MailerService
+  ) {}
 
   
   @Post('register')
@@ -113,6 +117,84 @@ export class UserController {
     }
   }
 
+  @Get('fogetPassword')
+  async forgetPassword(
+    @Res() response: Response,
+    @Body('email') email: string
+  ) {
+    try {
+      const user = await this.userService.getUserByEmail(email);
+      if(user){
+        const OTP = this.generateOTP()
+        await this.mailerService.sendMail(user.email, "OTP", "Your OTP: "+ OTP);
+        await this.userService.updateUser(user._id as string, {OTP})
+        return response.status(HttpStatus.OK).json({
+          statusCode: HttpStatus.OK,
+          message: 'Email sent to User',
+          data: user,
+        });
+      }
+      return response.status(HttpStatus.NOT_FOUND).json({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'User not found'
+      });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: error.message,
+      });
+    }
+  }
+
+  @Get('verifyOTP')
+  async verifyOTP(
+    @Res() response: Response,
+    @Body() Body: {OTP: string, email: string}
+  ) {
+
+    const {OTP, email} = Body
+    try {
+
+      const verify = await this.userService.verifyOTP(OTP, email)
+      if(verify){
+        return response.status(HttpStatus.OK).json({
+          statusCode: HttpStatus.OK,
+          message: 'OTP Verified'
+        });
+      }
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'OTP Invalid'
+      });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: error.message,
+      });
+    }
+  }
+
+  @Get('resetPassword')
+  async resetPassword(
+    @Res() response: Response,
+    @Body() Body: {email: string, newPassword: string}
+  ) {
+
+    const {email, newPassword} = Body
+    try {
+
+      await this.userService.resetPassword(email, newPassword)
+      return response.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Password Updated'
+      });
+    } catch (error) {
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: error.message,
+      });
+    }
+  }
+
+
+
   @Get(':email?')
   async getAllUsers(
     @Res() response: Response,
@@ -133,12 +215,15 @@ export class UserController {
       });
     }
   }
- 
 
- 
+  generateOTP = () =>  {
+    const otp = Math.floor(1000 + Math.random() * 9000);
+    return otp.toString();
+  }
 
- 
-
+  getEpochTime(): number {
+    return Date.now();
+  }
 }
 
 

@@ -7,6 +7,7 @@ import { createUserDto } from './user.dto';
 import { User } from 'src/user/users.modal';
 import { promisify } from 'util';
 import { IAuthResponse } from 'src/types';
+import { UpdateUserDto } from './update-User.dto';
 
 
 
@@ -43,7 +44,8 @@ export class UserService {
       throw new Error('Failed to create user');
     }
   }
-  async updateUser(userId: string, updateUserDto: Partial<createUserDto>): Promise<Omit<User, 'password'>> {
+
+  async updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
     try {
       const { name, email, contact, role, password } = updateUserDto;
 
@@ -153,11 +155,59 @@ export class UserService {
     }
   }
 
+  async getUserByEmail(email?: string): Promise<Omit<User, 'password'>> {
+    try {
+      const query = email ? { email } : {};
+      const user = await this.userModel.findOne(query).select('-password').exec();
+      return user;
+    } catch (error) {
+      throw new Error('Failed to retrieve users');
+    }
+  }
+
 
 
   
+  async verifyOTP(OTP: string, email: string) {
+   try {
+     const user = await this.userModel.findOne({ email })
+     if(user){
+      if(OTP === user.OTP){
+        return true
+      }
+     }
+     return false
+   } catch (error) {
+     throw new Error('Failed to encrypt password');
+   }
+ }
 
-   async encryptPassword(password: string): Promise<string> {
+ async resetPassword(email: string, newPassword: string){
+  try {
+    const user = await this.userModel.findOne({ email })
+    if(user){
+      const encryptedPassword = await this.encryptPassword(newPassword);
+      const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        user._id, 
+        { 
+          password: encryptedPassword 
+        }, 
+        { 
+          new: true 
+        }
+      )
+      .select('-password -__v')
+      .exec();
+      return updatedUser.toObject();
+    }
+    throw new Error("User not Found")
+  } catch (error) {
+    throw new Error(error.message)
+  }
+ }
+
+  async encryptPassword(password: string): Promise<string> {
     try {
       const iv = randomBytes(16);
       return await this.encryptPasswordWithIv(password, iv.toString('hex'));

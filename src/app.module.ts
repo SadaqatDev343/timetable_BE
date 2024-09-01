@@ -21,6 +21,12 @@ import { DisciplineService } from './discipline/discipline.service';
 import { SemesterController } from './semester/semester.controller';
 import { SemesterService } from './semester/semester.service';
 import { Semester, SemesterSchema } from './semester/schema';
+import { TimetableController } from './timetable/timetable.controller';
+import { TimetableService } from './timetable/timetable.service';
+import { Room, RoomSchema } from './room/schema';
+import { Subject, SubjectSchema } from './subject/schema';
+import { Timetable, TimetableSchema } from './timetable/schema';
+import { MailerService } from './mailer/mailer.service';
 
 @Module({
   imports: [
@@ -32,13 +38,16 @@ import { Semester, SemesterSchema } from './semester/schema';
       { name: Discipline.name, schema: DisciplineSchema },
       { name: Section.name, schema: SectionSchema },
       { name: Semester.name, schema: SemesterSchema },
+      { name: Room.name, schema: RoomSchema },
+      { name: Subject.name, schema: SubjectSchema },
+      { name: Timetable.name, schema: TimetableSchema },
     ]),
     JwtModule.register({
       secret: 'default_secret', // Ensure you have a fallback secret
       signOptions: { expiresIn: '1h' }, // Optional: Configure token expiration
     }),
   ],
-  controllers: [AppController, UserController, TeacherController, DepartmentController, SectionController,DisciplineController, SemesterController ],
-  providers: [AppService, UserService, TeacherService, DepartmentService, SectionService,DisciplineService, SemesterService],
+  controllers: [AppController, UserController, TeacherController, DepartmentController, SectionController,DisciplineController, SemesterController, TimetableController ],
+  providers: [AppService, UserService, TeacherService, DepartmentService, SectionService,DisciplineService, SemesterService, TimetableService, MailerService],
 })
 export class AppModule {}
