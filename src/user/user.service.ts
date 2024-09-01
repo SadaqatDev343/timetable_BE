@@ -47,9 +47,13 @@ export class UserService {
 
   async updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
     try {
-      const { name, email, contact, role, password } = updateUserDto;
+      const { name, email, contact, role, password, OTP } = updateUserDto;
 
       let updateData: Partial<User> = { name, email, contact, role };
+
+      if(OTP){
+        updateData.OTP = OTP
+      }
 
       if (password) {
         // Encrypt the new password if provided
@@ -178,7 +182,7 @@ export class UserService {
      }
      return false
    } catch (error) {
-     throw new Error('Failed to encrypt password');
+     throw new Error(error.message);
    }
  }
 

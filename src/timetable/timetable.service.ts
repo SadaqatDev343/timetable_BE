@@ -4,5 +4,7 @@ import { Timetable } from './schema';
 @Injectable()
 export class TimetableService {
 
-  async createTimeTable(){}
+  async createTimeTable(){
+    
+  }
 }

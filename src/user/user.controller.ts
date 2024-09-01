@@ -25,7 +25,6 @@ export class UserController {
   @Post('register')
   async create(@Res() response: Response, @Body() createUserDto: createUserDto) {
     try {
-       console.log("call register api");
       const { user, token } = await this.userService.createUser(createUserDto);
       return response.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
