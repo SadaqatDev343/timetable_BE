@@ -20,7 +20,7 @@ export class MailerService {
 
   async sendMail(to: string, subject: string, text: string, html?: string): Promise<void> {
     const mailOptions = {
-      from: '"Hasaan Ali" <hasaanali057@gmail.com>', // Sender address
+      from: '"your  OTP" <hasaanali057@gmail.com>', // Sender address
       to, // List of receivers
       subject, // Subject line
       text, // Plain text body

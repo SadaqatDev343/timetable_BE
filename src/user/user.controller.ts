@@ -25,6 +25,7 @@ export class UserController {
   @Post('register')
   async create(@Res() response: Response, @Body() createUserDto: createUserDto) {
     try {
+       console.log("call register api");
       const { user, token } = await this.userService.createUser(createUserDto);
       return response.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
@@ -116,7 +117,7 @@ export class UserController {
     }
   }
 
-  @Get('fogetPassword')
+  @Post('fogetPassword')
   async forgetPassword(
     @Res() response: Response,
     @Body('email') email: string
@@ -144,29 +145,41 @@ export class UserController {
     }
   }
 
-  @Get('verifyOTP')
+  @Post('verifyOTP') // Typically, OTP verification would be a POST request
   async verifyOTP(
     @Res() response: Response,
-    @Body() Body: {OTP: string, email: string}
+    @Body() body: { OTP: string; email: string },
   ) {
-
-    const {OTP, email} = Body
-    try {
-
-      const verify = await this.userService.verifyOTP(OTP, email)
-      if(verify){
-        return response.status(HttpStatus.OK).json({
-          statusCode: HttpStatus.OK,
-          message: 'OTP Verified'
-        });
-      }
+    const { OTP, email } = body;
+    
+    // Input validation (basic example)
+    if (!OTP || !email) {
       return response.status(HttpStatus.BAD_REQUEST).json({
         statusCode: HttpStatus.BAD_REQUEST,
-        message: 'OTP Invalid'
+        message: 'OTP and email are required',
+      });
+    }
+
+    try {
+      // Assuming verifyOTP returns a boolean
+      const isVerified = await this.userService.verifyOTP(OTP, email);
+
+      if (isVerified) {
+        return response.status(HttpStatus.OK).json({
+          statusCode: HttpStatus.OK,
+          message: 'OTP Verified',
+        });
+      }
+
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: 'OTP Invalid',
       });
     } catch (error) {
+      console.error('Error verifying OTP:', error);
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: error.message,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
       });
     }
   }
