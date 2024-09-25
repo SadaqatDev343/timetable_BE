@@ -7,7 +7,7 @@ import {
   Param,
   Post,
   Patch,
-  Res
+  Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { createUserDto } from './user.dto';
@@ -18,14 +18,16 @@ import { MailerService } from '../mailer/mailer.service';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly mailerService: MailerService
+    private readonly mailerService: MailerService,
   ) {}
 
-  
   @Post('register')
-  async create(@Res() response: Response, @Body() createUserDto: createUserDto) {
+  async create(
+    @Res() response: Response,
+    @Body() createUserDto: createUserDto,
+  ) {
     try {
-       console.log("call register api");
+      console.log('call register api');
       const { user, token } = await this.userService.createUser(createUserDto);
       return response.status(HttpStatus.CREATED).json({
         statusCode: HttpStatus.CREATED,
@@ -99,10 +101,13 @@ export class UserController {
   async update(
     @Res() response: Response,
     @Param('id') userId: string,
-    @Body() updateUserDto: Partial<createUserDto>
+    @Body() updateUserDto: Partial<createUserDto>,
   ) {
     try {
-      const updatedUser = await this.userService.updateUser(userId, updateUserDto);
+      const updatedUser = await this.userService.updateUser(
+        userId,
+        updateUserDto,
+      );
       return response.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
         message: 'User updated successfully',
@@ -120,14 +125,18 @@ export class UserController {
   @Post('fogetPassword')
   async forgetPassword(
     @Res() response: Response,
-    @Body('email') email: string
+    @Body('email') email: string,
   ) {
     try {
       const user = await this.userService.getUserByEmail(email);
-      if(user){
-        const OTP = this.generateOTP()
-        await this.mailerService.sendMail(user.email, "OTP", "Your OTP: "+ OTP);
-        await this.userService.updateUser(user._id as string, {OTP})
+      if (user) {
+        const OTP = this.generateOTP();
+        await this.mailerService.sendMail(
+          user.email,
+          'OTP',
+          'Your OTP: ' + OTP,
+        );
+        await this.userService.updateUser(user._id as string, { OTP });
         return response.status(HttpStatus.OK).json({
           statusCode: HttpStatus.OK,
           message: 'Email sent to User',
@@ -136,7 +145,7 @@ export class UserController {
       }
       return response.status(HttpStatus.NOT_FOUND).json({
         statusCode: HttpStatus.NOT_FOUND,
-        message: 'User not found'
+        message: 'User not found',
       });
     } catch (error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -151,7 +160,7 @@ export class UserController {
     @Body() body: { OTP: string; email: string },
   ) {
     const { OTP, email } = body;
-    
+
     // Input validation (basic example)
     if (!OTP || !email) {
       return response.status(HttpStatus.BAD_REQUEST).json({
@@ -184,19 +193,17 @@ export class UserController {
     }
   }
 
-  @Get('resetPassword')
+  @Post('resetPassword')
   async resetPassword(
     @Res() response: Response,
-    @Body() Body: {email: string, newPassword: string}
+    @Body() Body: { email: string; newPassword: string },
   ) {
-
-    const {email, newPassword} = Body
+    const { email, newPassword } = Body;
     try {
-
-      await this.userService.resetPassword(email, newPassword)
+      await this.userService.resetPassword(email, newPassword);
       return response.status(HttpStatus.OK).json({
         statusCode: HttpStatus.OK,
-        message: 'Password Updated'
+        message: 'Password Updated',
       });
     } catch (error) {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -205,13 +212,8 @@ export class UserController {
     }
   }
 
-
-
   @Get(':email?')
-  async getAllUsers(
-    @Res() response: Response,
-    @Param('email') email: string,
-  ) {
+  async getAllUsers(@Res() response: Response, @Param('email') email: string) {
     try {
       const users = await this.userService.getAllUsers(email);
       return response.status(HttpStatus.OK).json({
@@ -228,14 +230,12 @@ export class UserController {
     }
   }
 
-  generateOTP = () =>  {
+  generateOTP = () => {
     const otp = Math.floor(1000 + Math.random() * 9000);
     return otp.toString();
-  }
+  };
 
   getEpochTime(): number {
     return Date.now();
   }
 }
-
-
