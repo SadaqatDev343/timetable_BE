@@ -24,6 +24,20 @@ export class SectionService {
     }
     return section;
   }
+  async findByName(name: string): Promise<Section> {
+    const section = await this.sectionModel
+      .findOne({ name }) // Find section by name
+      .populate('department') // Populate department
+      .populate('discipline') // Populate discipline
+      .populate('semester')   // Populate semester
+      .populate('teacher')    // Populate teacher
+      .exec();
+    
+    if (!section) {
+      throw new NotFoundException(`Section with name "${name}" not found`);
+    }
+    return section;
+  }
 
   async update(id: string, updateSectionDto: UpdateSectionDto): Promise<Section> {
     const section = await this.sectionModel.findByIdAndUpdate(id, updateSectionDto, { new: true }).exec();

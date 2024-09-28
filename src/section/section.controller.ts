@@ -67,6 +67,24 @@ export class SectionController {
     }
   }
 
+  @Get('by-name/:name')
+  async findByName(@Res() response: Response, @Param('name') name: string) {
+    try {
+      const section = await this.sectionService.findByName(name);
+      return response.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Section retrieved successfully',
+        data: section,
+      });
+    } catch (error) {
+      return response.status(HttpStatus.NOT_FOUND).json({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Section not found',
+        error: error.message,
+      });
+    }
+  }
+
   @Patch(':id')
   async update(
     @Res() response: Response,
