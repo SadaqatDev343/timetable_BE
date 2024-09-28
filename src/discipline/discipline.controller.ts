@@ -67,6 +67,23 @@ export class DisciplineController {
     }
   }
 
+  @Get('by-name/:name')
+  async findByName(@Res() response: Response, @Param('name') name: string) {
+    try {
+      const discipline = await this.disciplineService.findByName(name);
+      return response.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Discipline retrieved successfully',
+        data: discipline,
+      });
+    } catch (error) {
+      return response.status(HttpStatus.NOT_FOUND).json({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: error.message,
+      });
+    }
+  }
+
   @Patch(':id')
   async update(
     @Res() response: Response,
