@@ -38,19 +38,25 @@ export class SemesterService {
     
     return semesters;
   }
-  async findByDiscipline(disciplineId: string): Promise<Semester> {
-    const semester = await this.semesterModel
-      .findOne({ discipline: disciplineId }) // Find by discipline ID
-      .populate('discipline') // Populate discipline
-      .populate('department') // Populate department
-      .exec();
+  async findByDiscipline(disciplineId: string): Promise<Semester[]> {
+    const semesters = await this.semesterModel
+        .find({
+            $or: [
+                { 'discipline': disciplineId }, // Match if discipline is stored as a string
+                { 'discipline._id': disciplineId } // Match if discipline is an object reference
+            ]
+        })
+        .populate('discipline') // Populate discipline
+        .populate('department') // Populate department
+        .exec();
     
-    if (!semester) {
-      throw new NotFoundException(`Semester with discipline ID "${disciplineId}" not found`);
+    if (semesters.length === 0) {
+        throw new NotFoundException(`No semesters found for discipline ID "${disciplineId}"`);
     }
     
-    return semester;
-  }
+    return semesters;
+}
+
   
   
   async update(id: string, updateSemesterDto: UpdateSemesterDto): Promise<Semester> {
