@@ -66,7 +66,7 @@ export class DisciplineController {
       });
     }
   }
-
+ 
   @Get('by-name/:name')
   async findByName(@Res() response: Response, @Param('name') name: string) {
     try {
@@ -83,6 +83,23 @@ export class DisciplineController {
       });
     }
   }
+  @Get('by-department/:departmentId')
+async findByDepartment(@Res() response: Response, @Param('departmentId') departmentId: string) {
+  try {
+    const disciplines = await this.disciplineService.findByDepartment(departmentId);
+    return response.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Disciplines retrieved successfully',
+      data: disciplines,
+    });
+  } catch (error) {
+    return response.status(HttpStatus.NOT_FOUND).json({
+      statusCode: HttpStatus.NOT_FOUND,
+      message: error.message,
+    });
+  }
+}
+
 
   @Patch(':id')
   async update(

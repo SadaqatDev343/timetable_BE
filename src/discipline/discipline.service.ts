@@ -35,7 +35,19 @@ export class DisciplineService {
     }
     return discipline;
   }
-
+  
+  async findByDepartment(departmentId: string): Promise<Discipline[]> {
+    const disciplines = await this.disciplineModel
+      .find({ department: departmentId }) // Find disciplines by department ID
+      .populate('department') // Populate the department data
+      .exec();
+    
+    if (!disciplines.length) {
+      throw new NotFoundException(`No disciplines found for department with ID ${departmentId}`);
+    }
+    return disciplines;
+  }
+  
   async update(id: string, updateDisciplineDto: UpdateDisciplineDto): Promise<Discipline> {
     const discipline = await this.disciplineModel.findByIdAndUpdate(id, updateDisciplineDto, { new: true }).exec();
     if (!discipline) {
