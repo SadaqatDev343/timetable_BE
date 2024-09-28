@@ -84,6 +84,24 @@ export class SectionController {
       });
     }
   }
+  @Get('by-semester/:semesterId')
+async findBySemester(@Res() response: Response, @Param('semesterId') semesterId: string) {
+  try {
+    const sections = await this.sectionService.findBySemester(semesterId);
+    return response.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: 'Sections retrieved successfully',
+      data: sections,
+    });
+  } catch (error) {
+    return response.status(HttpStatus.NOT_FOUND).json({
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'Sections not found',
+      error: error.message,
+    });
+  }
+}
+
 
   @Patch(':id')
   async update(

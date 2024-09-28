@@ -38,6 +38,20 @@ export class SectionService {
     }
     return section;
   }
+  async findBySemester(semesterId: string): Promise<Section[]> {
+    const sections = await this.sectionModel
+      .find({ semester: semesterId }) // Find sections by semester ID
+      .populate('department') // Populate department
+      .populate('discipline') // Populate discipline
+      .populate('teacher')    // Populate teacher
+      .exec();
+  
+    if (sections.length === 0) {
+      throw new NotFoundException(`No sections found for semester ID "${semesterId}"`);
+    }
+    return sections;
+  }
+  
 
   async update(id: string, updateSectionDto: UpdateSectionDto): Promise<Section> {
     const section = await this.sectionModel.findByIdAndUpdate(id, updateSectionDto, { new: true }).exec();

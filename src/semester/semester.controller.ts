@@ -25,6 +25,12 @@ export class SemesterController {
   async findByName(@Param('name') name: string) {
     return this.semesterService.findByName(name);
   }
+  
+  @Get('by-discipline/:disciplineId')
+async findByDiscipline(@Param('disciplineId') disciplineId: string) {
+  return this.semesterService.findByDiscipline(disciplineId);
+}
+
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateSemesterDto: UpdateSemesterDto) {
     return this.semesterService.update(id, updateSemesterDto);
