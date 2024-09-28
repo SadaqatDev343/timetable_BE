@@ -3,8 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Room extends Document {
-  @Prop({ required: true })
-  buildingNumber: string;
+
 
   @Prop({ required: true })
   buildingName: string;

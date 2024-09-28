@@ -27,6 +27,10 @@ import { Room, RoomSchema } from './room/schema';
 import { Subject, SubjectSchema } from './subject/schema';
 import { Timetable, TimetableSchema } from './timetable/schema';
 import { MailerService } from './mailer/mailer.service';
+import { SubjectController } from './subject/subject.controller';
+import { RoomController } from './room/room.controller';
+import { RoomService } from './room/room.service';
+import { SubjectService } from './subject/subject.service';
 
 @Module({
   imports: [
@@ -47,7 +51,7 @@ import { MailerService } from './mailer/mailer.service';
       signOptions: { expiresIn: '1h' }, // Optional: Configure token expiration
     }),
   ],
-  controllers: [AppController, UserController, TeacherController, DepartmentController, SectionController,DisciplineController, SemesterController, TimetableController ],
-  providers: [AppService, UserService, TeacherService, DepartmentService, SectionService,DisciplineService, SemesterService, TimetableService, MailerService],
+  controllers: [AppController, UserController, TeacherController, DepartmentController, SectionController,DisciplineController, SemesterController, TimetableController, SubjectController, RoomController ],
+  providers: [AppService, UserService, TeacherService, DepartmentService, SectionService,DisciplineService, SemesterService, TimetableService, MailerService, RoomService, SubjectService],
 })
 export class AppModule {}
