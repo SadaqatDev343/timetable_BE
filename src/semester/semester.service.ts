@@ -25,18 +25,19 @@ export class SemesterService {
     return semester;
   }
 
-  async findByName(name: string): Promise<Semester> {
-    const semester = await this.semesterModel
-      .findOne({ name }) // Find by name
+  async findByName(name: string): Promise<Semester[]> {
+    const semesters = await this.semesterModel
+      .find({ name }) // Find all by name
       .populate('discipline') // Populate discipline
       .populate('department') // Populate department
       .exec();
-    if (!semester) {
-      throw new NotFoundException(`Semester with name "${name}" not found`);
+    
+    if (semesters.length === 0) {
+      throw new NotFoundException(`No semesters with name "${name}" found`);
     }
-    return semester;
+    
+    return semesters;
   }
-
   async findByDiscipline(disciplineId: string): Promise<Semester> {
     const semester = await this.semesterModel
       .findOne({ discipline: disciplineId }) // Find by discipline ID
