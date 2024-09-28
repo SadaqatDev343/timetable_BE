@@ -39,4 +39,11 @@ export class DepartmentService {
       throw new NotFoundException('Department not found');
     }
   }
+  async getDepartmentByName(name: string): Promise<Department> {
+    const department = await this.departmentModel.findOne({ name }).exec();
+    if (!department) {
+      throw new NotFoundException('Department not found');
+    }
+    return department;
+  }
 }

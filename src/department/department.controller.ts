@@ -54,4 +54,12 @@ export class DepartmentController {
       throw new HttpException(error.message, HttpStatus.NOT_FOUND);
     }
   }
+  @Get('by-name/:name')
+  async findByName(@Param('name') name: string): Promise<Department> {
+    try {
+      return await this.departmentService.getDepartmentByName(name);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
+  }
 }
