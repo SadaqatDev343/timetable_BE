@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Res, HttpStatus } from '@nestjs/common';
 import { TimetableService } from './timetable.service';
 import { CreateTimeTableDto, UpdateTimeTableDto } from './dto';
-
+import { Response } from 'express';
 
 @Controller('timetable')
 export class TimetableController {
@@ -23,6 +23,23 @@ export class TimetableController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.timetableService.findOne(id);
+  }
+  @Get('by-section/:sectionId')
+  async findBySection(@Res() response: Response, @Param('sectionId') sectionId: string) {
+    try {
+      const timetables = await this.timetableService.findBySection(sectionId);
+      return response.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'Timetable retrieved successfully',
+        data: timetables,
+      });
+    } catch (error) {
+      return response.status(HttpStatus.NOT_FOUND).json({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Timetable not found',
+        error: error.message,
+      });
+    }
   }
 
   // Update a timetable by ID

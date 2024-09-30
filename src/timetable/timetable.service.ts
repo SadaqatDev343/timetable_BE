@@ -41,7 +41,25 @@ export class TimetableService {
     }
     return updatedTimetable;
   }
-
+  
+  async findBySection(sectionId: string): Promise<Timetable[]> {
+    const timetables = await this.timetableModel
+      .find({ section: sectionId }) // Find timetables by section ID
+      .populate('department')       // Populate department
+      .populate('discipline')       // Populate discipline
+      .populate('semester')         // Populate semester
+      .populate('teacher')          // Populate teacher
+      .populate('subject')          // Populate subject
+      .populate('room')             // Populate room
+      .exec();
+  
+    if (timetables.length === 0) {
+      throw new NotFoundException(`No timetables found for section ID "${sectionId}"`);
+    }
+  
+    return timetables;
+  }
+  
   // Delete a timetable by ID
   async remove(id: string): Promise<void> {
     const deletedTimetable = await this.timetableModel.findByIdAndDelete(id).exec();

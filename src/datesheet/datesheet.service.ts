@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Datesheet } from './schema';
 import { CreateDatesheetDto, UpdateDatesheetDto } from './dto';
 
@@ -30,6 +30,22 @@ export class DatesheetService {
     return datesheet;
   }
 
+  async findBySection(sectionId: string): Promise<Datesheet[]> {
+    const Datesheet = await this.datesheetModel
+      .find({ section: sectionId }) // Find timetables by section ID
+      .populate('department')       // Populate department
+      .populate('discipline')       // Populate discipline
+      .populate('semester')         // Populate semester
+      .populate('teacher')          // Populate teacher
+      .populate('subject')          // Populate subject
+      .populate('room')             // Populate room
+      .exec();
+  
+    if (Datesheet.length === 0) {
+      throw new NotFoundException(`No timetables found for section ID "${sectionId}"`);
+    }
+    return Datesheet;
+  }
   // Update a datesheet by ID
   async update(id: string, updateDatesheetDto: UpdateDatesheetDto): Promise<Datesheet> {
     const updatedDatesheet = await this.datesheetModel

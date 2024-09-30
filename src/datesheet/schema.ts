@@ -16,7 +16,7 @@ export class Datesheet extends Document {
   section: Types.ObjectId; // References Section ObjectId
 
   @Prop({ type: Types.ObjectId, ref: 'Subject', required: true })
-  subject: Types.ObjectId; // References Subject ObjectId
+  subject: Types.ObjectId; // Refearences Subject ObjectId
 
   @Prop({ type: Types.ObjectId, ref: 'Room', required: true })
   room: Types.ObjectId; // Exam room

@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus, Res } from '@nestjs/common';
 import { DatesheetService } from './datesheet.service';
 import { CreateDatesheetDto, UpdateDatesheetDto } from './dto';
-
+import { Response } from 'express';
 
 @Controller('datesheet')
 export class DatesheetController {
@@ -23,6 +23,23 @@ export class DatesheetController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.datesheetService.findOne(id);
+  }
+  @Get('by-section/:sectionId')
+  async findBySection(@Res() response: Response, @Param('sectionId') sectionId: string) {
+    try {
+      const timetables = await this.datesheetService.findBySection(sectionId);
+      return response.status(HttpStatus.OK).json({
+        statusCode: HttpStatus.OK,
+        message: 'datesheet retrieved successfully',
+        data: timetables,
+      });
+    } catch (error) {
+      return response.status(HttpStatus.NOT_FOUND).json({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'datesheet not found',
+        error: error.message,
+      });
+    }
   }
 
   // Update a datesheet by ID
