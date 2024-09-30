@@ -27,11 +27,11 @@ export class Timetable extends Document {
   @Prop({ type: String, required: true })
   day: string;  // Optionally, you could use an enum for predefined days
 
-  @Prop({ type: Date, required: true })
-  startTime: Date;
+  @Prop({ type: String, required: true })
+  startTime: string;
 
-  @Prop({ type: Date, required: true })
-  endTime: Date;
+  @Prop({ type: String, required: true })
+  endTime: string;
 }
 
 export const TimetableSchema = SchemaFactory.createForClass(Timetable);

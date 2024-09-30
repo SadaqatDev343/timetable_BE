@@ -35,12 +35,12 @@ export class CreateTimeTableDto {
   day: string;  // Stores the day, could also be an enum if you want
 
   @IsNotEmpty()
-  @IsDate()
-  startTime: Date;  // Start time of the timetable
+  @IsString()
+  startTime: string;  // Start time of the timetable
 
   @IsNotEmpty()
-  @IsDate()
-  endTime: Date;  // End time of the timetable
+  @IsString()
+  endTime: string;  // End time of the timetable
 }
 
 export class UpdateTimeTableDto extends PartialType(CreateTimeTableDto) {}
