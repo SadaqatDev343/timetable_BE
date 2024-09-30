@@ -31,6 +31,8 @@ import { SubjectController } from './subject/subject.controller';
 import { RoomController } from './room/room.controller';
 import { RoomService } from './room/room.service';
 import { SubjectService } from './subject/subject.service';
+import { DatesheetController } from './datesheet/datesheet.controller';
+import { DatesheetService } from './datesheet/datesheet.service';
 
 @Module({
   imports: [
@@ -51,7 +53,7 @@ import { SubjectService } from './subject/subject.service';
       signOptions: { expiresIn: '1h' }, // Optional: Configure token expiration
     }),
   ],
-  controllers: [AppController, UserController, TeacherController, DepartmentController, SectionController,DisciplineController, SemesterController, TimetableController, SubjectController, RoomController ],
-  providers: [AppService, UserService, TeacherService, DepartmentService, SectionService,DisciplineService, SemesterService, TimetableService, MailerService, RoomService, SubjectService],
+  controllers: [AppController, UserController, TeacherController, DepartmentController, SectionController,DisciplineController, SemesterController, TimetableController, SubjectController, RoomController, DatesheetController ],
+  providers: [AppService, UserService, TeacherService, DepartmentService, SectionService,DisciplineService, SemesterService, TimetableService, MailerService, RoomService, SubjectService, DatesheetService],
 })
 export class AppModule {}
