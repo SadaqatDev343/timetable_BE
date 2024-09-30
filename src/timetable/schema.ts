@@ -3,22 +3,35 @@ import { Document, Types } from 'mongoose';
 
 @Schema()
 export class Timetable extends Document {
-  @Prop({ required: true })
-  department: string;
+  @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
+  department: Types.ObjectId;
 
-  @Prop({ required: true })
-  discipline: string;
+  @Prop({ type: Types.ObjectId, ref: 'Discipline', required: true })
+  discipline: Types.ObjectId;
 
-  @Prop({ required: true })
-  semester: string;
+  @Prop({ type: Types.ObjectId, ref: 'Semester', required: true })
+  semester: Types.ObjectId;
 
-  @Prop({ required: true })
-  section: string;
+  @Prop({ type: Types.ObjectId, ref: 'Section', required: true })
+  section: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Teacher', required: true })
   teacher: Types.ObjectId;
 
-  // You can add more fields here as needed, e.g., the timings or days
+  @Prop({ type: Types.ObjectId, ref: 'Subject', required: true })
+  subject: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Room', required: true })
+  room: Types.ObjectId;
+
+  @Prop({ type: String, required: true })
+  day: string;  // Optionally, you could use an enum for predefined days
+
+  @Prop({ type: Date, required: true })
+  startTime: Date;
+
+  @Prop({ type: Date, required: true })
+  endTime: Date;
 }
 
 export const TimetableSchema = SchemaFactory.createForClass(Timetable);

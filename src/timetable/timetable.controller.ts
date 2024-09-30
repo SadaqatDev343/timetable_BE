@@ -1,38 +1,39 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Res,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { TimetableService } from './timetable.service';
-import { CreateTimeTableDto } from './dto';
-import { Response } from 'express';
+import { CreateTimeTableDto, UpdateTimeTableDto } from './dto';
+
 
 @Controller('timetable')
 export class TimetableController {
-  constructor(private readonly timeTableService: TimetableService) {}
-  
-    @Post()
-    async create(@Res() response: Response, @Body() createTimeTableDto: CreateTimeTableDto) {
-      try {
-        const timeTable = await this.timeTableService.createTimeTable();
-        return response.status(HttpStatus.CREATED).json({
-          statusCode: HttpStatus.CREATED,
-          message: 'Teacher created successfully',
-          data: timeTable,
-        });
-        
-      } catch (error) {
-        return response.status(HttpStatus.BAD_REQUEST).json({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Failed to create teacher',
-          error: error.message,
-        });
-      }
-    }
+  constructor(private readonly timetableService: TimetableService) {}
+
+  // Create a new timetable
+  @Post()
+  create(@Body() createTimeTableDto: CreateTimeTableDto) {
+    return this.timetableService.create(createTimeTableDto);
+  }
+
+  // Get all timetables
+  @Get()
+  findAll() {
+    return this.timetableService.findAll();
+  }
+
+  // Get a specific timetable by ID
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.timetableService.findOne(id);
+  }
+
+  // Update a timetable by ID
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateTimeTableDto: UpdateTimeTableDto) {
+    return this.timetableService.update(id, updateTimeTableDto);
+  }
+
+  // Delete a timetable by ID
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.timetableService.remove(id);
+  }
 }
