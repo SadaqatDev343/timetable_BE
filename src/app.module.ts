@@ -33,6 +33,7 @@ import { RoomService } from './room/room.service';
 import { SubjectService } from './subject/subject.service';
 import { DatesheetController } from './datesheet/datesheet.controller';
 import { DatesheetService } from './datesheet/datesheet.service';
+import { Datesheet, DatesheetSchema } from './datesheet/schema';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { DatesheetService } from './datesheet/datesheet.service';
       { name: Room.name, schema: RoomSchema },
       { name: Subject.name, schema: SubjectSchema },
       { name: Timetable.name, schema: TimetableSchema },
+      { name: Datesheet.name, schema: DatesheetSchema },
     ]),
     JwtModule.register({
       secret: 'default_secret', // Ensure you have a fallback secret
