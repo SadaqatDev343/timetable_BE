@@ -35,7 +35,8 @@ export class DatesheetService {
       .find({ section: sectionId }) // Find timetables by section ID
       .populate('department')       // Populate department
       .populate('discipline')       // Populate discipline
-      .populate('semester')         // Populate semester        // Populate teacher
+      .populate('semester')         // Populate semester
+      .populate('teacher')          // Populate teacher
       .populate('subject')          // Populate subject
       .populate('room')             // Populate room
       .exec();
