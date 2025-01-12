@@ -3,7 +3,18 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-  app.enableCors();
-  await app.listen(3000);
+
+  // Configure CORS
+  app.enableCors({
+    origin: '*', // In production, replace with your frontend URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  // Use process.env.PORT for Vercel deployment
+  const port = 3000;
+  await app.listen(port);
+
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
