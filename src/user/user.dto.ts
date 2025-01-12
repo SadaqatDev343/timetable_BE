@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { UserRole } from 'src/type';
+import { UserRole } from 'src/teacher/custom_types';
 
 export class createUserDto {
   @IsString()

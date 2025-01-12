@@ -9,8 +9,9 @@ import { Model } from 'mongoose';
 import { Teacher } from './schema';
 import { CreateTeacherDto, UpdateTeacherDto } from './dto';
 import { createUserDto } from './../user/user.dto';
-import { UserRole } from 'src/type';
+
 import { UserService } from 'src/user/user.service';
+import { UserRole } from 'src/teacher/custom_types';
 @Injectable()
 export class TeacherService {
   constructor(

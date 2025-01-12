@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { createUserDto } from './user.dto';
 import { User } from 'src/user/users.modal';
 import { promisify } from 'util';
-import { IAuthResponse } from 'src/type';
+import { IAuthResponse } from 'src/teacher/custom_types';
 import { UpdateUserDto } from './update-User.dto';
 
 @Injectable()
