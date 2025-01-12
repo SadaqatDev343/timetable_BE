@@ -6,10 +6,8 @@ import { Model } from 'mongoose';
 import { createUserDto } from './user.dto';
 import { User } from 'src/user/users.modal';
 import { promisify } from 'util';
-import { IAuthResponse } from 'src/types';
+import { IAuthResponse } from 'src/type';
 import { UpdateUserDto } from './update-User.dto';
-
-
 
 @Injectable()
 export class UserService {
@@ -18,7 +16,9 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async createUser(createUserDto: createUserDto): Promise<{ user: Omit<User, 'password'>; token: string }> {
+  async createUser(
+    createUserDto: createUserDto,
+  ): Promise<{ user: Omit<User, 'password'>; token: string }> {
     try {
       const { name, password, email, contact, role } = createUserDto;
       const encryptedPassword = await this.encryptPassword(password);
@@ -45,14 +45,17 @@ export class UserService {
     }
   }
 
-  async updateUser(userId: string, updateUserDto: UpdateUserDto): Promise<Omit<User, 'password'>> {
+  async updateUser(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<Omit<User, 'password'>> {
     try {
       const { name, email, contact, role, password, OTP } = updateUserDto;
 
       let updateData: Partial<User> = { name, email, contact, role };
 
-      if(OTP){
-        updateData.OTP = OTP
+      if (OTP) {
+        updateData.OTP = OTP;
       }
 
       if (password) {
@@ -83,32 +86,35 @@ export class UserService {
         .findOne({ email })
         .select('-__v')
         .exec();
-  
+
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-  
+
       const [storedIv] = user.password.split('|');
-      const encryptedPassword = await this.encryptPasswordWithIv(password, storedIv);
-  
+      const encryptedPassword = await this.encryptPasswordWithIv(
+        password,
+        storedIv,
+      );
+
       if (encryptedPassword !== user.password) {
         throw new UnauthorizedException('Invalid password');
       }
-  
+
       // Check user role
       if (!['student', 'teacher', 'staff'].includes(user.role)) {
         throw new UnauthorizedException('Unauthorized role');
       }
-  
+
       const payload = { userId: user._id, email: user.email, role: user.role };
       const accessToken = await this.jwtService.signAsync(payload);
-  
+
       return { user, access_Token: accessToken };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
-  
+
   async adminLogin(email: string, password: string): Promise<IAuthResponse> {
     try {
       // Find the user by email
@@ -116,30 +122,33 @@ export class UserService {
         .findOne({ email })
         .select('-__v')
         .exec();
-  
+
       // Check if user exists
       if (!user) {
         throw new UnauthorizedException('User not found');
       }
-  
+
       // Check if the user's role is admin
       if (user.role !== 'admin') {
         throw new UnauthorizedException('Unauthorized role');
       }
-  
+
       // Decrypt and verify the password
       const [storedIv] = user.password.split('|');
-      const encryptedPassword = await this.encryptPasswordWithIv(password, storedIv);
-  
+      const encryptedPassword = await this.encryptPasswordWithIv(
+        password,
+        storedIv,
+      );
+
       // Validate the password
       if (encryptedPassword !== user.password) {
         throw new UnauthorizedException('Invalid credentials');
       }
-  
+
       // Generate an access token
       const payload = { userId: user._id, email: user.email };
       const accessToken = await this.jwtService.signAsync(payload);
-  
+
       // Return the user and access token
       return { user, access_Token: accessToken };
     } catch (error) {
@@ -147,7 +156,6 @@ export class UserService {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
-  
 
   async getAllUsers(email?: string): Promise<Omit<User, 'password'>[]> {
     try {
@@ -162,54 +170,54 @@ export class UserService {
   async getUserByEmail(email?: string): Promise<Omit<User, 'password'>> {
     try {
       const query = email ? { email } : {};
-      const user = await this.userModel.findOne(query).select('-password').exec();
+      const user = await this.userModel
+        .findOne(query)
+        .select('-password')
+        .exec();
       return user;
     } catch (error) {
       throw new Error('Failed to retrieve users');
     }
   }
 
-
-
-  
   async verifyOTP(OTP: string, email: string) {
-   try {
-     const user = await this.userModel.findOne({ email })
-     if(user){
-      if(OTP === user.OTP){
-        return true
-      }
-     }
-     return false
-   } catch (error) {
-     throw new Error(error.message);
-   }
- }
-
- async resetPassword(email: string, newPassword: string){
-  try {
-    const user = await this.userModel.findOne({ email })
-    if(user){
-      const encryptedPassword = await this.encryptPassword(newPassword);
-      const updatedUser = await this.userModel
-      .findByIdAndUpdate(
-        user._id, 
-        { 
-          password: encryptedPassword 
-        }, 
-        { 
-          new: true 
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (user) {
+        if (OTP === user.OTP) {
+          return true;
         }
-      )
-      .select('-password -__v')
-      .exec();
-      return updatedUser.toObject();
+      }
+      return false;
+    } catch (error) {
+      throw new Error(error.message);
     }
-    throw new Error("User not Found")
-  } catch (error) {
-    throw new Error(error.message)
   }
- }
+
+  async resetPassword(email: string, newPassword: string) {
+    try {
+      const user = await this.userModel.findOne({ email });
+      if (user) {
+        const encryptedPassword = await this.encryptPassword(newPassword);
+        const updatedUser = await this.userModel
+          .findByIdAndUpdate(
+            user._id,
+            {
+              password: encryptedPassword,
+            },
+            {
+              new: true,
+            },
+          )
+          .select('-password -__v')
+          .exec();
+        return updatedUser.toObject();
+      }
+      throw new Error('User not Found');
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 
   async encryptPassword(password: string): Promise<string> {
     try {
@@ -220,17 +228,13 @@ export class UserService {
     }
   }
 
-   async encryptPasswordWithIv(
+  async encryptPasswordWithIv(
     password: string,
     ivHex: string,
   ): Promise<string> {
     try {
       const iv = Buffer.from(ivHex, 'hex');
-      const key = (await promisify(scrypt)(
-        'password',
-        'salt',
-        32,
-      )) as Buffer;
+      const key = (await promisify(scrypt)('password', 'salt', 32)) as Buffer;
       const cipher = createCipheriv('aes-256-ctr', key, iv);
       const encryptedPassword = Buffer.concat([
         cipher.update(password),

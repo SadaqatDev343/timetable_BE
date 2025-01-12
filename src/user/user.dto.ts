@@ -1,5 +1,11 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { UserRole } from 'src/types';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { UserRole } from 'src/type';
 
 export class createUserDto {
   @IsString()
