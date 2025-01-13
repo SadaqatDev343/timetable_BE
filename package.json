@@ -9,6 +9,9 @@
     "build": "nest build",
     "start": "node dist/main.js"
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
