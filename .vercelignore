@@ -5,5 +5,4 @@ test
 **/*.test.ts
 .env
 .env.*
-dist
 coverage
